@@ -1,0 +1,1 @@
+This project is made for learning purposes, meaning that the idea here is not to give explicit answers nor change the code, but to help the user to achieve the expected result. The user has experience with typescript applications and node.js.
