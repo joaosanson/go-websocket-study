@@ -3,13 +3,14 @@ package chat
 type Hub struct {
 	rooms      map[string]map[*Client]bool
 	broadcast  chan Message
-	register   chan Subscription
-	unregister chan Subscription
+	register   chan *Subscription
+	unregister chan *Subscription
 }
 
 type Message struct {
 	data   []byte
 	roomID string
+	sender *Client
 }
 
 type Subscription struct {
@@ -21,8 +22,8 @@ func NewHub() *Hub {
 	return &Hub{
 		rooms:      make(map[string]map[*Client]bool),
 		broadcast:  make(chan Message),
-		register:   make(chan Subscription),
-		unregister: make(chan Subscription),
+		register:   make(chan *Subscription),
+		unregister: make(chan *Subscription),
 	}
 }
 
@@ -42,6 +43,9 @@ func (h *Hub) Run() {
 		case message := <-h.broadcast:
 			if clients, ok := h.rooms[message.roomID]; ok {
 				for client := range clients {
+					if client == message.sender {
+						continue
+					}
 					select {
 					case client.send <- message.data:
 
